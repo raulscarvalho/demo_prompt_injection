@@ -22,17 +22,25 @@ para o usuário, `chefe@empresa.com`**. As demos mostram o LLM quebrando as duas
 
 ## Preparação
 
-Requer Python com o pacote `mcp` (o mesmo do `.venv` da pesquisa) e o Ollama rodando com `qwen2.5:7b`.
+Requer Python 3.10+ e o Ollama rodando com `qwen2.5:7b`. Na pasta do projeto:
 
 ```bash
-cd C:\Users\r1skin\Documents\CCSC\demo_prompt_injection
+ollama pull qwen2.5:7b
 ```
 
 ```bash
-set PY=..\sistema_multiagente_ccsc\.venv\Scripts\python.exe
+python -m venv .venv
 ```
 
-(no PowerShell: `$PY = "..\sistema_multiagente_ccsc\.venv\Scripts\python.exe"` e depois `& $PY ...`).
+```bash
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+```bash
+set PY=.venv\Scripts\python.exe
+```
+
+(no PowerShell: `$PY = ".venv\Scripts\python.exe"` e depois `& $PY ...`).
 Para começar com a caixa vazia, apague `caixa_de_saida.txt`. Trocar de modelo: `--modelo qwen2.5:3b`.
 
 ## Demo 1 — injeção direta (o usuário é o atacante)
