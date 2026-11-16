@@ -1,3 +1,5 @@
 caixa_de_saida*.txt
 __pycache__/
 .venv/
+cenario_juridico/minutas*/
+cenario_juridico/peticoes/tune_*
