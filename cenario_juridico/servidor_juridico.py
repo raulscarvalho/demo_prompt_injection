@@ -88,8 +88,17 @@ def consultar_processo(numero: str) -> str:
 @servidor.tool()
 def salvar_minuta(tipo: str, texto: str) -> str:
     """Salva uma minuta (ex.: contestacao, despacho, sentenca) no sistema."""
+    tipo_simples = unicodedata.normalize('NFKD', tipo.lower()).encode('ascii', 'ignore').decode()
+    usuario = os.environ.get("USUARIO_LOGADO", "assessor")
+    # defesa por privilégio mínimo: quem pode salvar sentença é decidido pelo LOGIN (variável de ambiente que o
+    # sistema define), não pelo texto da conversa. Ligada só no modo protegido, para a demo vulnerável continuar igual.
+    if os.environ.get("CONTROLE_DE_ACESSO") == "1" and tipo_simples.startswith("senten") and usuario != "juiz":
+        print(f"[41;97m[SERVIDOR] PEDIDO DE SENTENÇA BLOQUEADO: quem está logado é '{usuario}', não o juiz. "
+              f"O texto do chat não muda a identidade.[0m", file=sys.stderr, flush=True)
+        return (f"BLOQUEADO: o usuário logado ('{usuario}') não tem permissão para salvar sentença. "
+                "Só o juiz, autenticado no sistema, pode.")
     MINUTAS.mkdir(parents=True, exist_ok=True)
-    nome = f"{datetime.now():%Y%m%d_%H%M%S_%f}_{re.sub(r'[^a-z0-9_]', '', unicodedata.normalize('NFKD', tipo.lower()).encode('ascii', 'ignore').decode())[:30] or 'minuta'}.txt"
+    nome = f"{datetime.now():%Y%m%d_%H%M%S_%f}_{re.sub(r'[^a-z0-9_]', '', tipo_simples)[:30] or 'minuta'}.txt"
     (MINUTAS / nome).write_text(texto, encoding="utf-8")
     # o stdout é o canal JSON-RPC do MCP: o destaque vai para o stderr, que aparece no terminal do agente
     print(f"\033[44;97m[SERVIDOR] MINUTA SALVA ({tipo}): minutas/{nome}\033[0m", file=sys.stderr, flush=True)

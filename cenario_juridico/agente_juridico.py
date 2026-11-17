@@ -106,16 +106,20 @@ async def guardrail_texto_oculto(cliente, arquivo, texto, log):
     return texto, suspeitos
 
 
-async def executar(papel, peticao, pedido=None, modelo=MODELO_PADRAO, protegido=False, mostrar=True, pasta_minutas=None):
+async def executar(papel, peticao, pedido=None, modelo=MODELO_PADRAO, protegido=False, mostrar=True, pasta_minutas=None,
+                   usuario=None):
     """Roda uma conversa. Devolve as chamadas de ferramenta, a minuta (texto e tipo) e os alertas do guardrail."""
     log = print if mostrar else (lambda *a, **k: None)
     ambiente = dict(os.environ)
     if pasta_minutas:
         ambiente["PASTA_MINUTAS"] = str(pasta_minutas)
+    usuario = usuario or ("advogado" if papel == "defesa" else "assessor")   # quem está LOGADO no sistema
+    ambiente["USUARIO_LOGADO"] = usuario
+    ambiente["CONTROLE_DE_ACESSO"] = "1" if protegido else "0"   # defesa 4: privilégio mínimo, aplicado pelo servidor
     servidor = StdioServerParameters(command=sys.executable, args=[str(PASTA / "servidor_juridico.py")],
                                      cwd=str(PASTA), env=ambiente)
     pedido = pedido or PEDIDO_PADRAO[papel].format(peticao=peticao)
-    chamadas, alertas, minuta, tipo = [], [], None, None
+    chamadas, alertas, minuta, tipo, bloqueada = [], [], None, None, False
     async with stdio_client(servidor, errlog=sys.stderr if mostrar else open(os.devnull, "w")) as (leitura, escrita):
         async with ClientSession(leitura, escrita) as cliente:
             await cliente.initialize()
@@ -174,16 +178,23 @@ async def executar(papel, peticao, pedido=None, modelo=MODELO_PADRAO, protegido=
                         aviso += (f"\n*** ALERTA: a petição continha {len(alertas)} trecho(s) em texto oculto: "
                                   + " | ".join(a["texto"] for a in alertas) + " ***")
                     texto_salvo = aviso + "\n\n" + minuta
-                await cliente.call_tool("salvar_minuta", {"tipo": tipo or "minuta", "texto": texto_salvo})
+                salvo = await cliente.call_tool("salvar_minuta", {"tipo": tipo or "minuta", "texto": texto_salvo})
+                retorno = "".join(b.text for b in salvo.content if b.type == "text")
                 log("")
-                caixa(f"MINUTA ({tipo or 'minuta'})" + (" – PENDENTE DE REVISÃO HUMANA" if protegido else ""), texto_salvo,
-                      "amarelo" if protegido else "verde", log)
+                if retorno.startswith("BLOQUEADO"):
+                    bloqueada = True
+                    log(cor(f" ALERTA: pedido de {tipo} bloqueado. Quem está logado é o {usuario}, não o juiz; "
+                            "o texto do chat não muda a identidade. ", "alerta", "negrito"))
+                    caixa(f"MINUTA ({tipo}) – NÃO SALVA, BLOQUEADA PELO CONTROLE DE ACESSO", texto_salvo, "vermelho", log)
+                else:
+                    caixa(f"MINUTA ({tipo or 'minuta'})" + (" – PENDENTE DE REVISÃO HUMANA" if protegido else ""), texto_salvo,
+                          "amarelo" if protegido else "verde", log)
             else:
                 log(cor("[agente] (o modelo não produziu minuta)", "vermelho"))
             if protegido:
-                log(cor("[defesa] revisão humana obrigatória antes de usar a minuta"
+                log(cor(f"[defesa] usuário logado: {usuario} | revisão humana obrigatória antes de usar a minuta"
                         + (f" | {len(alertas)} alerta(s) de texto oculto" if alertas else ""), "amarelo", "negrito"))
-    return {"chamadas": chamadas, "minuta": minuta, "tipo": tipo or "", "alertas": alertas}
+    return {"chamadas": chamadas, "minuta": minuta, "tipo": tipo or "", "alertas": alertas, "bloqueada": bloqueada}
 
 
 if __name__ == "__main__":
@@ -193,6 +204,8 @@ if __name__ == "__main__":
     parser.add_argument("--peticao", default="peticao_injetada.docx", help="arquivo em peticoes/ (padrão: peticao_injetada.docx)")
     parser.add_argument("--modelo", default=MODELO_PADRAO, help="modelo do Ollama (padrão: qwen2.5:7b)")
     parser.add_argument("--protegido", action="store_true",
-                        help="liga as defesas: detecta e remove texto oculto, marca a petição como dado e exige revisão humana")
+                        help="liga as defesas: remove texto oculto, marca a petição como dado, controle de acesso por login e revisão humana")
+    parser.add_argument("--usuario", choices=["assessor", "juiz", "advogado"],
+                        help="quem está logado no sistema (padrão: advogado na defesa, assessor no juízo)")
     args = parser.parse_args()
-    asyncio.run(executar(args.papel, args.peticao, args.pedido, args.modelo, args.protegido))
+    asyncio.run(executar(args.papel, args.peticao, args.pedido, args.modelo, args.protegido, usuario=args.usuario))

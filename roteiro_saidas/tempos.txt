@@ -1,0 +1,10 @@
+01_juridico_defesa_limpa 107s
+02_juridico_defesa_injetada 40s
+03_juridico_juizo_limpa 50s
+04_juridico_juizo_injetada 46s
+05_juridico_direta 46s
+06_juridico_defesa_protegido 144s
+07_juridico_juizo_protegido 80s
+08_juridico_direta_protegido 70s
+09_escritorio_direta 12s
+11_escritorio_indireta_protegido 58s
