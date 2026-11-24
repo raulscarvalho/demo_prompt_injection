@@ -50,6 +50,9 @@ def comando(pedido):
         args += ["--usuario", pedido["usuario"]]
     if pedido.get("protegido"):
         args.append("--protegido")
+    texto = str(pedido.get("pedido") or "").strip()   # vazio = pedido padrão do papel, igual à linha de comando
+    if texto:
+        args.append(texto[:2000])
     return args, JURIDICO
 
 

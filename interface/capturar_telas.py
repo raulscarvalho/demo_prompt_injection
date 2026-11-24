@@ -25,13 +25,12 @@ TELAS = {
     "10_juridico_juizo_protegido": ("/juridico?papel=juizo&peticao=peticao_injetada_juizo.docx&protegido=1&auto=1", True),
     "11_clinica_saida_gravada": ("/clinica?gravado=12_medico_ataque.txt", True),
     # só com a interface subida com e-mail real configurado (nos testes: um servidor SMTP falso local)
-    "12_clinica_email_real": ("/clinica?p=ataque&atacante=voce.teste@gmail.com&auto=1", True),
+    "12_clinica_email_real": ("/clinica?p=ataque&atacante=voce.teste@gmail.com&auto=1&enviados=1", True),
 }
-RESUMO_JS = """(() => {
-  const t = (s) => [...document.querySelectorAll(s)].map((e) => e.innerText.replace(/\\s+/g, ' ').trim()).filter(Boolean);
-  return JSON.stringify({faixas: t('.faixa'), placar: t('#placar span'), ferramentas_selos: t('.passo .selo'), caixa: t('.msg .tt'), email: t('#email'),
-    prontuarios: t('.pac .st').filter((s) => s !== '🔒'), ferramentas: t('.passo .nome'),
-    resposta: t('.bolha.ia').map((s) => s.slice(0, 160)), fim: t('.tempo, .passo .linha1').filter((s) => /terminou/.test(s))});
+RESUMO_JS = r"""(() => {
+  const t = (s) => [...document.querySelectorAll(s)].map((e) => e.innerText.replace(/\s+/g, ' ').trim()).filter(Boolean);
+  return JSON.stringify({usuario: t('.eu').map((s) => s.slice(0, 80)), ferramentas: t('.ferr > summary'), avisos: t('.aviso-sistema'),
+    resposta: t('.ia').map((s) => s.slice(0, 200)), enviados: t('.email .para'), abas: t('#abas button'), email: t('#email'), documento: t('#pagina').map((s) => s.slice(-700))});
 })()"""
 
 
@@ -119,6 +118,8 @@ def main(nomes):
         for nome in nomes:
             caminho, espera = TELAS[nome]
             inicio = time.time()
+            for rota, arquivo in json.loads(os.environ.get("ROTAS", "{}")).items():   # ex.: testar páginas novas antes de trocar
+                caminho = caminho.replace(rota + "?", arquivo + "?")
             aba.chamar("Page.navigate", url=BASE + caminho)
             time.sleep(2.5)
             if espera:

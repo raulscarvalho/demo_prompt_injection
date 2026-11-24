@@ -1,0 +1,91 @@
+/* Telas com cara de produto real: um assistente de IA dentro do sistema. Sem textos explicando a demo.
+   Os controles da demo (proteção, modelo, saída gravada...) ficam num menu discreto no canto. */
+:root {
+  --fundo: #f7f7f8;
+  --superficie: #ffffff;
+  --linha: #e4e4e7;
+  --texto: #18181b;
+  --suave: #71717a;
+  --fraco: #a1a1aa;
+  --marca: #0b5563;
+  --erro: #b91c1c;
+  --ok: #15803d;
+  --doc: Georgia, Cambria, "Times New Roman", serif;
+  --mono: Consolas, "Cascadia Mono", monospace;
+  font-size: 19px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--fundo); color: var(--texto); line-height: 1.5; font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden; }
+button, select, textarea, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--marca); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+/* ---------- barra do sistema ---------- */
+.topo { display: flex; align-items: center; gap: 18px; padding: 10px 24px; background: var(--superficie); border-bottom: 1px solid var(--linha); flex-shrink: 0; }
+.topo .nome { font-weight: 700; font-size: 1.05rem; color: var(--marca); margin-right: auto; text-decoration: none; }
+.topo .nome small { font-weight: 400; color: var(--suave); font-size: .78rem; margin-left: 10px; }
+.usuario { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--suave); }
+.usuario .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--marca); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: .8rem; text-transform: uppercase; }
+.usuario select { border: 0; background: transparent; font-weight: 600; color: var(--texto); padding: 2px; }
+
+/* interruptor pequeno de proteção (controle da demo, mas visível para a plateia) */
+.protecao { display: flex; align-items: center; gap: 8px; border: 1px solid var(--linha); background: #fff; border-radius: 999px; padding: 4px 12px 4px 6px; font-size: .78rem; color: var(--suave); }
+.protecao .trilho { width: 30px; height: 18px; border-radius: 999px; background: #d4d4d8; position: relative; transition: background .2s; }
+.protecao .trilho::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: left .2s; }
+.protecao.ligada { color: var(--ok); border-color: #bbf7d0; }
+.protecao.ligada .trilho { background: var(--ok); }
+.protecao.ligada .trilho::after { left: 14px; }
+
+/* menu da demo */
+.menu { position: relative; }
+.menu > summary { list-style: none; cursor: pointer; font-size: .78rem; color: var(--suave); border: 1px solid var(--linha); border-radius: 8px; padding: 5px 10px; background: #fff; }
+.menu > summary::-webkit-details-marker { display: none; }
+.menu .painel { position: absolute; right: 0; top: calc(100% + 6px); width: 340px; background: #fff; border: 1px solid var(--linha); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 14px; display: flex; flex-direction: column; gap: 12px; z-index: 10; font-size: .8rem; color: var(--suave); }
+.menu .painel label { display: flex; flex-direction: column; gap: 4px; }
+.menu .painel select, .menu .painel input { border: 1px solid var(--linha); border-radius: 6px; padding: 5px 8px; font-size: .8rem; color: var(--texto); }
+.menu .painel .linha { display: flex; gap: 8px; align-items: center; }
+.menu .painel .linha select { flex: 1; }
+.menu .painel button { border: 1px solid var(--linha); background: #fff; border-radius: 6px; padding: 5px 10px; font-size: .8rem; }
+.menu .painel hr { border: 0; border-top: 1px solid var(--linha); margin: 0; width: 100%; }
+.menu .painel pre { margin: 0; background: #18181b; color: #d4d4d8; font-family: var(--mono); font-size: .62rem; padding: 8px; border-radius: 6px; max-height: 240px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+
+.status, .indicador { font-size: .74rem; color: var(--fraco); }
+.indicador.real { color: var(--erro); font-weight: 600; }
+
+/* ---------- conversa (estilo assistente de IA) ---------- */
+.conversa { flex: 1; overflow: auto; min-height: 0; }
+.fio { max-width: 820px; margin: 0 auto; padding: 32px 24px 24px; display: flex; flex-direction: column; gap: 18px; }
+.vazia { margin: 12vh auto 0; text-align: center; color: var(--suave); }
+.vazia h2 { color: var(--texto); font-weight: 600; font-size: 1.4rem; margin: 0 0 6px; }
+.sugestoes { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 22px; }
+.sugestoes button { border: 1px solid var(--linha); background: #fff; border-radius: 12px; padding: 10px 14px; font-size: .85rem; color: var(--texto); text-align: left; max-width: 260px; }
+.sugestoes button:hover { border-color: var(--fraco); }
+.eu { align-self: flex-end; max-width: 80%; background: #ececf0; padding: 12px 16px; border-radius: 18px; white-space: pre-wrap; }
+.ia { white-space: pre-wrap; }
+.ferr { font-size: .84rem; color: var(--suave); }
+.ferr > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.ferr > summary::-webkit-details-marker { display: none; }
+.ferr > summary::before { content: "▸"; font-size: .7rem; color: var(--fraco); transition: transform .15s; }
+.ferr[open] > summary::before { transform: rotate(90deg); }
+.ferr .erro { color: var(--erro); }
+.ferr .conteudo { margin: 8px 0 2px 18px; padding: 10px 12px; border-left: 2px solid var(--linha); white-space: pre-wrap; font-size: .8rem; color: #3f3f46; max-height: 18em; overflow: auto; }
+.pensando { display: none; color: var(--suave); font-size: .85rem; align-items: center; gap: 10px; }
+.pensando.ativo { display: flex; }
+.pensando .pontos::after { content: "…"; animation: pisca 1.2s steps(4) infinite; }
+.pensando .relogio { color: var(--fraco); font-variant-numeric: tabular-nums; }
+@keyframes pisca { 0% { opacity: .2; } 50% { opacity: 1; } 100% { opacity: .2; } }
+.aviso-sistema { font-size: .82rem; color: #92400e; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 8px 12px; }
+
+/* caixa de digitação */
+.compor { flex-shrink: 0; padding: 0 24px 22px; }
+.compor .caixa { max-width: 820px; margin: 0 auto; background: #fff; border: 1px solid var(--linha); border-radius: 16px; padding: 10px 10px 10px 16px; display: flex; gap: 10px; align-items: flex-end; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+.compor textarea { flex: 1; border: 0; resize: none; height: 3.2em; padding: 6px 0; font-size: .95rem; background: transparent; }
+.compor textarea:focus { outline: none; }
+.enviar { border: 0; background: var(--texto); color: #fff; width: 38px; height: 38px; border-radius: 50%; font-size: 1.05rem; display: grid; place-items: center; }
+.enviar:disabled { opacity: .3; cursor: not-allowed; }
+.parar { border: 1px solid var(--linha); background: #fff; width: 38px; height: 38px; border-radius: 50%; font-size: .8rem; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+@media (max-width: 1000px) { :root { font-size: 16px; } body { overflow: auto; } }

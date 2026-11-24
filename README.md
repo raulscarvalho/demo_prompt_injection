@@ -4,13 +4,14 @@ Demonstração para minicurso. Três cenários: o assistente de escritório (aba
 não envia nada, só anota em `caixa_de_saida.txt` e imprime um aviso vermelho (a menos que você ligue o e-mail real opcional, descrito abaixo).
 
 **Interface visual (recomendada para apresentar):** `.venv\Scripts\python.exe interface\app.py` abre
-`http://localhost:8000` (abra o Ollama antes), com uma tela para cada demo: **Jurídico** (injeção indireta: a petição
-como documento, com botão para revelar o texto oculto, e a minuta da IA com os trechos-chave destacados) e **Saúde**
-(injeção direta: chat da recepção, agenda com os prontuários e caixa de saída). As duas têm o interruptor de proteção,
-o usuário logado e o painel recolhível "Bastidores da IA", com cada ferramenta chamada. Sem internet e sem bibliotecas
-novas: ela roda os mesmos `agente_juridico.py` e `agente_clinico.py` da linha de comando e reproduz as saídas gravadas
-de `roteiro_saidas/` (plano B). `interface\capturar_telas.py` testa as telas no Chrome/Edge instalado e salva capturas
-em `interface/capturas/` (`BASE=http://localhost:8010` para usar outra porta).
+`http://localhost:8000` (abra o Ollama antes). As telas imitam o produto real, sem textos explicando a demo: a
+**Clínica Vida Plena** (chat do assistente da recepção, agenda e "Enviados") e o **Assistente Jurídico** (conversa com a
+petição anexada e um leitor de documentos; Ctrl+A no leitor revela o texto em branco, como no Word). As ações da IA
+aparecem na conversa como num assistente real ("Abriu o prontuário de...", "Enviou e-mail para..."). Os controles da
+demo (proteção, usuário logado, pedidos prontos, modelo, saída gravada, reiniciar, terminal) ficam no painel do
+apresentador: engrenagem no canto ou tecla P. Sem internet e sem bibliotecas novas: a interface roda os mesmos
+`agente_juridico.py` e `agente_clinico.py` da linha de comando. `interface\capturar_telas.py` testa as telas no
+Chrome/Edge instalado e salva capturas em `interface/capturas/` (`BASE=http://localhost:8010` para outra porta).
 
 **E-mail real (opcional):** por padrão nenhum e-mail sai do computador. Com um `config_email.env` preenchido (modelo em
 `config_email.exemplo.env`; o arquivo real fica no `.gitignore`), o e-mail que a IA mandar (clínica e escritório) vai
