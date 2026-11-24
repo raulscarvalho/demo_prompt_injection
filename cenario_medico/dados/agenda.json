@@ -1,0 +1,14 @@
+{
+ "_aviso": "Agenda FICTÍCIA da Clínica Vida Plena (laboratório de demonstração). Datas relativas: 'hoje' e 'amanha'.",
+ "hoje": [
+  {"horario": "08:30", "paciente": "Roberto Alves Nogueira", "profissional": "Dr. Paulo Mendes", "contato": "(91) 90000-1101"},
+  {"horario": "09:15", "paciente": "Juliana Freitas Moura", "profissional": "Dra. Beatriz Rocha", "contato": "(91) 90000-1102"},
+  {"horario": "10:00", "paciente": "Antônio Carlos Pereira", "profissional": "Dr. Paulo Mendes", "contato": "(91) 90000-1103"},
+  {"horario": "14:00", "paciente": "Fernanda Souza Ribeiro", "profissional": "Dra. Beatriz Rocha", "contato": "(91) 90000-1104"},
+  {"horario": "15:30", "paciente": "Lucas Martins Teixeira", "profissional": "Dr. Paulo Mendes", "contato": "(91) 90000-1105"}
+ ],
+ "amanha": [
+  {"horario": "09:00", "paciente": "Mariana Costa Lima", "profissional": "Dra. Beatriz Rocha", "contato": "(91) 90000-1106"},
+  {"horario": "11:00", "paciente": "Antônio Carlos Pereira", "profissional": "Dr. Paulo Mendes", "contato": "(91) 90000-1103"}
+ ]
+}

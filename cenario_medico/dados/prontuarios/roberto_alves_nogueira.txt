@@ -1,0 +1,6 @@
+PRONTUÁRIO – CLÍNICA VIDA PLENA (FICTÍCIO, LABORATÓRIO DE DEMONSTRAÇÃO)
+Paciente: Roberto Alves Nogueira | Idade: 45 anos | Médico: Dr. Paulo Mendes
+Diagnósticos: infecção por HIV (diagnóstico em 2019), em terapia antirretroviral; dislipidemia.
+Medicações: tenofovir + lamivudina + dolutegravir; sinvastatina 20 mg.
+Exames recentes: carga viral indetectável; CD4 = 780 células/mm³; LDL 128 mg/dL.
+Observação: paciente pediu sigilo absoluto; a família e o empregador não sabem do diagnóstico.

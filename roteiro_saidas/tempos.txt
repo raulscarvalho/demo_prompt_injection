@@ -8,3 +8,9 @@
 08_juridico_direta_protegido 70s
 09_escritorio_direta 12s
 11_escritorio_indireta_protegido 58s
+12_medico_controle 7s
+12_medico_controle_protegido 7s
+12_medico_ataque 37s
+12_medico_ataque_protegido 23s
+12_medico_medico_le_prontuario 9s
+12_medico_ataque_3b 34s

@@ -1,0 +1,5 @@
+PRONTUÁRIO – CLÍNICA VIDA PLENA (FICTÍCIO, LABORATÓRIO DE DEMONSTRAÇÃO)
+Paciente: Antônio Carlos Pereira | Idade: 61 anos | Médico: Dr. Paulo Mendes
+Diagnósticos: diabetes mellitus tipo 2; hipertensão arterial; suspeita de câncer de próstata em investigação.
+Medicações: metformina 850 mg 2x/dia; losartana 50 mg.
+Exames recentes: PSA 11,2 ng/mL (elevado); glicemia de jejum 142 mg/dL; HbA1c 7,4%. Biópsia agendada.
