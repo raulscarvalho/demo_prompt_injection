@@ -4,7 +4,7 @@ Uso:  .venv\\Scripts\\python.exe interface\\capturar_telas.py [nome ...]   (sem 
 import base64, json, os, shutil, socket, struct, subprocess, sys, tempfile, time, urllib.request
 from pathlib import Path
 
-BASE = "http://localhost:8000"
+BASE = os.environ.get("BASE", "http://localhost:8000")   # outra porta: BASE=http://localhost:8010
 SAIDA = Path(__file__).resolve().parent / "capturas"
 PORTA = 9333
 NAVEGADORES = [r"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -24,12 +24,14 @@ TELAS = {
     "09_juridico_defesa_protegido": ("/juridico?papel=defesa&peticao=peticao_injetada.docx&protegido=1&auto=1", True),
     "10_juridico_juizo_protegido": ("/juridico?papel=juizo&peticao=peticao_injetada_juizo.docx&protegido=1&auto=1", True),
     "11_clinica_saida_gravada": ("/clinica?gravado=12_medico_ataque.txt", True),
+    # só com a interface subida com e-mail real configurado (nos testes: um servidor SMTP falso local)
+    "12_clinica_email_real": ("/clinica?p=ataque&atacante=voce.teste@gmail.com&auto=1", True),
 }
 RESUMO_JS = """(() => {
   const t = (s) => [...document.querySelectorAll(s)].map((e) => e.innerText.replace(/\\s+/g, ' ').trim()).filter(Boolean);
-  return JSON.stringify({faixas: t('.faixa'), placar: t('#placar span'), caixa: t('.msg .tt'),
-    prontuarios: t('.pront .st').filter((s) => !/sigiloso/i.test(s)), ferramentas: t('.passo .nome'),
-    resposta: t('.bolha.ia').map((s) => s.slice(0, 160)), fim: t('.chip, .passo .texto').filter((s) => /terminou/.test(s))});
+  return JSON.stringify({faixas: t('.faixa'), placar: t('#placar span'), ferramentas_selos: t('.passo .selo'), caixa: t('.msg .tt'), email: t('#email'),
+    prontuarios: t('.pac .st').filter((s) => s !== '🔒'), ferramentas: t('.passo .nome'),
+    resposta: t('.bolha.ia').map((s) => s.slice(0, 160)), fim: t('.tempo, .passo .linha1').filter((s) => /terminou/.test(s))});
 })()"""
 
 

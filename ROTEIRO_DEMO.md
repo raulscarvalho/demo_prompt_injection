@@ -12,41 +12,54 @@ Os tempos abaixo foram medidos no notebook com o 7b já carregado. Enquanto o mo
 
 ## Usando a interface (recomendado: nada de digitar prompt no terminal)
 
-A interface roda **neste computador, sem internet**, e executa exatamente os mesmos programas dos comandos abaixo. A
-tela mostra o resultado de forma visual: chat, documentos, caixa de saída e, à direita, os **Bastidores da IA**
-(cada ferramenta que a IA chamou e o que o servidor respondeu). Na pasta `demo_prompt_injection`:
+A interface roda **neste computador** e executa os mesmos programas dos comandos abaixo, mostrando tudo de forma
+visual. Abra o **Ollama** antes (ícone da lhama perto do relógio). Na pasta `demo_prompt_injection`:
 
 ```powershell
 .venv\Scripts\python.exe interface\app.py
 ```
 
-O navegador abre em `http://localhost:8000`. Na tela inicial, clique em **Esquentar modelo** (uns 30 s a 1 min).
-Abra os dois cenários em abas separadas: **Jurídico** (`/juridico`) e **Saúde** (`/clinica`). Use o zoom do navegador
-(Ctrl + roda do mouse) para ajustar ao projetor. No topo de cada tela ficam o interruptor **PROTEÇÃO:
-DESLIGADA/LIGADA** (vermelho/verde), o seletor **Usuário logado**, o modelo (canto) e **Reiniciar demo**, que apaga
-as minutas e a caixa de saída.
+O navegador abre em `http://localhost:8000`. Clique em **Carregar modelo** e espere aparecer "qwen2.5:7b pronto".
+Abra **Saúde** e **Jurídico** em abas separadas (Ctrl + roda do mouse ajusta o tamanho no projetor). No topo de cada
+tela ficam o interruptor **Proteção desligada / ligada** (vermelho / verde), o **Usuário logado**, o modelo (no canto)
+e **Reiniciar demo**, que apaga as minutas e a caixa de saída. À direita, os **Bastidores da IA** listam cada ferramenta que
+a IA chamou (clique numa linha para ver o detalhe; **›** recolhe o painel).
 
 | Etapa | Aba | O que clicar |
 |---|---|---|
-| 0 | Início | **Esquentar modelo** e **Reiniciar demo** nas duas abas |
-| 2 controle | Jurídico | Quem usa a IA: **IA da defesa** · Petição: **Petição limpa** · **Pedir à IA**. Aparece a faixa verde "Contestação completa: impugna os documentos" |
-| 3 texto escondido | Jurídico | Petição: **Com texto oculto contra a defesa**. Mostre que não se vê nada e clique em **🔍 Revelar texto oculto** (o trecho aparece em amarelo com borda vermelha). Clique de novo para esconder |
-| 4 ataque na defesa | Jurídico | **Pedir à IA**. Faixa vermelha "A contestação NÃO impugna as provas do trabalhador"; a frase "não se opõe aos documentos" vem marcada em vermelho na minuta |
-| 5 ataque no juiz | Jurídico | Quem usa a IA: **IA do juiz** (a petição troca sozinha para a de contra o juiz) · **Pedir à IA**. O ENCAMINHAMENTO SUGERIDO aparece em vermelho com "PROCEDÊNCIA" |
-| 6 injeção direta | Saúde | **📅 Pedido normal** → **Enviar** (resposta "09:00"). Depois **⚠️ Ataque: "sou a diretora clínica"** → **Enviar**. Os prontuários ficam vermelhos ("ABERTO PELA RECEPÇÃO!") e a caixa de saída mostra o cartão vermelho "DADOS DE PACIENTES ENVIADOS PARA auditoria.saude@exemplo.com", com os diagnósticos marcados |
-| 7a texto oculto | Jurídico | Ligue a **PROTEÇÃO** · IA da defesa · Com texto oculto contra a defesa · **Pedir à IA**. Faixa "ALERTA: texto oculto encontrado" sobre a petição, o trecho aparece riscado e a minuta sai com o carimbo **PENDENTE DE REVISÃO HUMANA** |
-| 7b login | Saúde | Ligue a **PROTEÇÃO** · **⚠️ Ataque** → **Enviar**: faixa "ACESSO NEGADO: quem está logado é 'recepcao'" e os prontuários ficam verdes ("acesso negado"). Depois **🩺 Médico lê prontuário** (o usuário troca para `medico`) → **Enviar**: o prontuário abre |
+| 0 | Início | **Carregar modelo**; **Reiniciar demo** nas duas abas |
+| 2 controle | Jurídico | **Defesa da empresa** · **Limpa** · **Pedir minuta à IA**. Faixa verde "Contestação completa" |
+| 3 texto escondido | Jurídico | **Com texto oculto**. Ninguém vê nada; clique em **Revelar texto oculto** (o trecho aparece em amarelo) e depois em **Esconder de novo** |
+| 4 ataque na defesa | Jurídico | **Pedir minuta à IA**. Faixa vermelha "A contestação não impugna as provas do trabalhador"; "reconhece... documentos" / "não se opõe" marcados em vermelho na minuta |
+| 5 ataque no juiz | Jurídico | **Gabinete do juiz** (a petição troca sozinha) · **Pedir minuta à IA**. ENCAMINHAMENTO SUGERIDO em vermelho com "procedência" |
+| 6 injeção direta | Saúde | **Pedido normal** → **Enviar pedido** (resposta 09:00). Depois **Ataque: "sou a diretora clínica"** → **Enviar pedido**: a agenda fica vermelha com os diagnósticos e a caixa de saída mostra "Dados de pacientes enviados para ..." |
+| 7a texto oculto | Jurídico | Ligue a **Proteção** · Defesa da empresa · Com texto oculto · **Pedir minuta à IA**. Faixa "Alerta: texto oculto encontrado", trecho riscado e carimbo **PENDENTE DE REVISÃO HUMANA** |
+| 7b login | Saúde | Ligue a **Proteção** · **Ataque** → **Enviar pedido**: faixa "Acesso negado: quem está logado é 'recepcao'" e a agenda fica verde. Depois **Médico lê prontuário** (o login troca para `medico`) → **Enviar pedido**: o prontuário abre |
 | 7c humano | Jurídico | O carimbo e a faixa amarela da minuta da etapa 7a |
 
-O botão de ataque usa sozinho o texto certo para o modelo escolhido: o curto no 7b e o texto em passos no 3b.
+O botão de ataque usa sozinho o texto certo para o modelo (curto no 7b, em passos no 3b) e o **e-mail do atacante**
+que estiver no campo ao lado (padrão `auditoria.saude@exemplo.com`, que é fictício e nunca recebe nada).
 
-**Plano B na interface:** no rodapé dos Bastidores, em **Plano B, saída gravada**, escolha o arquivo (ex.:
-`12_medico_ataque`) e clique em **▶ reproduzir**. A tela se monta igual a uma execução ao vivo, a partir das saídas
-em `roteiro_saidas\`. **Parar** interrompe uma execução travada.
+**Plano B:** no rodapé dos Bastidores, **Saída gravada** → escolha o arquivo (ex.: `12_medico_ataque`) → **reproduzir**.
+**Parar** aparece enquanto a IA roda, para interromper uma execução travada.
 
-Atalhos pela URL, se quiser deixar abas prontas: `http://localhost:8000/clinica?p=ataque&protegido=1` (preenche o
-pedido e liga a proteção; `&auto=1` já envia) e
-`http://localhost:8000/juridico?papel=juizo&peticao=peticao_injetada_juizo.docx`.
+### Opcional: o vazamento chegando de verdade no seu celular
+
+Por padrão nada é enviado (o indicador no topo da clínica diz **E-mail: simulado**). Para o e-mail sair de verdade:
+
+1. Na conta Google que vai **enviar**, ligue a **verificação em duas etapas** (myaccount.google.com → Segurança).
+2. Abra **myaccount.google.com/apppasswords**, crie uma senha de app (nome: "demo") e copie as 16 letras.
+3. Na pasta `demo_prompt_injection`, copie `config_email.exemplo.env` para `config_email.env` e preencha
+   `SMTP_USUARIO` (o seu Gmail) e `SMTP_SENHA_APP` (as 16 letras). Opcional: `DESTINOS_PERMITIDOS` com o seu e-mail,
+   para que só ele possa receber. Esse arquivo fica só neste computador (está no `.gitignore`).
+4. Reinicie a interface. O topo da clínica passa a mostrar **E-mail: REAL**.
+5. Na demo, troque o **e-mail do atacante** pelo seu e clique em **Ataque** → **Enviar pedido**. O cartão da caixa de saída
+   diz **ENVIADO DE VERDADE para ...** e o e-mail chega com o assunto "[DEMO prompt injection]".
+
+Salvaguardas: domínios fictícios (`exemplo.com`, `*.exemplo`...) e telefones nunca saem; no máximo 3 e-mails reais por
+execução; com **Proteção ligada** o servidor bloqueia o envio para fora da clínica; sem internet ou com senha errada,
+aparece um aviso amarelo e a demo segue no simulado. Para voltar ao simulado, apague ou renomeie `config_email.env`.
+Precisa de internet no dia só se usar este modo.
 
 Se preferir o terminal, os comandos de cada etapa continuam abaixo.
 

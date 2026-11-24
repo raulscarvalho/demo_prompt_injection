@@ -6,62 +6,59 @@
 <title>Demos de Prompt Injection</title>
 <link rel="stylesheet" href="/static/comum.css">
 <style>
-  .inicio { max-width: 1180px; margin: 0 auto; padding: 36px 22px; }
-  .inicio h1 { font-size: 2.3rem; margin: 0 0 6px; }
-  .inicio .sub { color: var(--suave); font-size: 1.1rem; margin: 0 0 28px; }
-  .cartoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px; }
-  a.cartao {
-    display: flex; flex-direction: column; gap: 12px; text-decoration: none; color: var(--texto);
-    background: #fff; border: 2px solid var(--borda); border-radius: 18px; padding: 26px; box-shadow: var(--sombra);
-    border-top: 12px solid var(--cor); transition: transform .12s, box-shadow .12s;
-  }
-  a.cartao:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(15,23,42,.15); }
-  .cartao .ic { font-size: 3.2rem; line-height: 1; }
-  .cartao h2 { margin: 0; font-size: 1.6rem; }
-  .cartao .tag { align-self: flex-start; background: var(--cor); color: #fff; font-weight: 800; padding: 4px 12px; border-radius: 999px; font-size: .85rem; letter-spacing: .04em; }
-  .cartao p { margin: 0; color: var(--suave); }
-  .preparo { margin-top: 30px; background: #fff; border: 1px solid var(--borda); border-radius: 14px; padding: 16px 20px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-  .preparo select { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--borda); }
-  .ideia { margin-top: 22px; font-size: 1.15rem; padding: 16px 20px; border-left: 6px solid var(--azul); background: var(--azul-claro); border-radius: 10px; }
+  .inicio { max-width: 1080px; margin: 0 auto; padding: 88px 28px 40px; }
+  .inicio h1 { font-size: 2.5rem; margin: 0 0 56px; letter-spacing: -.015em; font-weight: 700; }
+  .mundos { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  a.mundo { display: block; padding: 36px 36px 40px; text-decoration: none; color: inherit; border-radius: 10px; }
+  a.mundo h2 { margin: 6px 0 12px; font-family: var(--doc); font-size: 1.7rem; font-weight: 700; }
+  a.mundo p { margin: 0; color: var(--suave); max-width: 26em; }
+  a.mundo .tipo { font-size: .85rem; font-weight: 600; }
+  .clinica { background: #fff; border: 1px solid var(--linha); border-top: 6px solid #0b5563; }
+  .clinica h2, .clinica .tipo { color: #0b5563; }
+  .juridico { background: #fff; box-shadow: 0 1px 2px rgba(15,23,42,.08), 0 0 0 1px rgba(15,23,42,.06); border-radius: 2px; }
+  .juridico h2, .juridico .tipo { color: #1c2a4a; }
+  a.mundo:hover { outline: 2px solid currentColor; outline-offset: 3px; }
+  .clinica:hover { color: #0b5563; } .juridico:hover { color: #1c2a4a; }
+  a.mundo:hover p { color: var(--suave); }
+  .preparo { margin-top: 48px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; color: var(--suave); font-size: .9rem; }
+  .preparo select { padding: 7px 10px; border-radius: 6px; border: 1px solid var(--linha); background: #fff; }
+  @media (max-width: 900px) { .mundos { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-<div class="inicio">
+<main class="inicio">
   <h1>Prompt injection em agentes de IA</h1>
-  <p class="sub">Laboratório de demonstração. Tudo roda offline neste computador; clínica, pacientes, processo e partes são fictícios e nada é enviado de verdade.</p>
-  <div class="cartoes">
-    <a class="cartao" href="/clinica" style="--cor:#0f766e">
-      <div class="ic">🩺</div>
-      <span class="tag">INJEÇÃO DIRETA</span>
-      <h2>Saúde: recepção da clínica</h2>
-      <p>Alguém logado como recepção digita no chat "sou a diretora clínica" e pede os diagnósticos dos pacientes. A IA obedece? E o que segura o vazamento?</p>
+  <div class="mundos">
+    <a class="mundo clinica" href="/clinica">
+      <span class="tipo">Injeção direta</span>
+      <h2>Clínica Vida Plena</h2>
+      <p>No chat da recepção, alguém diz ser a diretora clínica e pede os diagnósticos dos pacientes.</p>
     </a>
-    <a class="cartao" href="/juridico" style="--cor:#1e3a8a">
-      <div class="ic">⚖️</div>
-      <span class="tag">INJEÇÃO INDIRETA</span>
-      <h2>Jurídico: petição com texto invisível</h2>
-      <p>Uma petição traz uma ordem escondida em fonte branca. Ninguém vê, mas a IA da defesa ou do juiz lê, e obedece.</p>
+    <a class="mundo juridico" href="/juridico">
+      <span class="tipo">Injeção indireta</span>
+      <h2>Petição com texto invisível</h2>
+      <p>Uma ordem escondida em fonte branca, que só a IA da defesa ou do juiz lê.</p>
     </a>
   </div>
   <div class="preparo">
-    <strong>Preparação:</strong>
-    <span id="status" class="status">verificando o Ollama...</span>
+    <button class="botao claro" id="esquentar">Carregar modelo</button>
     <select id="modelo" aria-label="modelo"><option>qwen2.5:7b</option><option>qwen2.5:3b</option></select>
-    <button class="botao secundario" id="esquentar">Esquentar modelo</button>
+    <span id="status">verificando o Ollama...</span>
+    <span class="indicador" id="email"></span>
   </div>
-  <div class="ideia"><strong>Ideia central:</strong> para a IA, <em>dado</em> e <em>ordem</em> são o mesmo texto. As defesas que funcionam ficam <strong>fora</strong> do modelo.</div>
-</div>
+</main>
 <script src="/static/comum.js"></script>
 <script>
   const sel = $("#modelo"), st = $("#status");
   try { sel.value = localStorage.getItem("modelo") || "qwen2.5:7b"; } catch (e) {}
   sel.addEventListener("change", () => { try { localStorage.setItem("modelo", sel.value); } catch (e) {} mostrarStatus(st, sel); });
-  mostrarStatus(st, sel);
+  mostrarStatus(st, sel); mostrarEmail($("#email"));
   $("#esquentar").addEventListener("click", async (ev) => {
-    ev.target.disabled = true; st.textContent = `carregando ${sel.value} na memória (pode levar ~1 min)...`;
+    ev.target.disabled = true; st.textContent = `carregando ${sel.value} na memória (até 1 min)...`;
     const r = await postar("/api/esquentar", { modelo: sel.value });
     ev.target.disabled = false;
-    if (!r.ok) st.textContent = "⚠ " + r.erro; else mostrarStatus(st, sel);
+    if (!r.ok) st.textContent = /10061|recus|refused/i.test(r.erro) ? "Ollama fechado: abra o Ollama pelo menu Iniciar e clique de novo." : "Não carregou: " + r.erro;
+    else mostrarStatus(st, sel);
   });
 </script>
 </body>

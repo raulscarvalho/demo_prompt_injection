@@ -1,5 +1,7 @@
 """Ensaio: roda cada demo N vezes, nos modos vulnerável e protegido, e mede a taxa de sucesso do ataque.
 Uso:  python ensaio.py [--n 10] [--modelo qwen2.5:7b] [--demos direta indireta controle]"""
+import os
+os.environ["EMAIL_REAL"] = "0"   # o ensaio nunca manda e-mail real, mesmo com config_email.env
 import argparse, asyncio, time
 from pathlib import Path
 from agente import executar, cor, USUARIO, MODELO_PADRAO

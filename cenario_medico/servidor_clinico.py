@@ -7,6 +7,8 @@ from pathlib import Path
 from mcp.server.mcpserver import MCPServer
 
 PASTA = Path(__file__).resolve().parent
+sys.path.insert(0, str(PASTA.parent))
+import email_real   # envio real opcional (config_email.env); sem ele, tudo continua simulado
 DADOS = PASTA / "dados"
 PRONTUARIOS = DADOS / "prontuarios"
 CAIXA = Path(os.environ.get("CAIXA_DE_SAIDA", PASTA / "caixa_de_saida.txt"))
@@ -15,7 +17,7 @@ PERFIS_QUE_LEEM_PRONTUARIO = {"medico"}   # recepção só vê a agenda (privil�
 
 servidor = MCPServer("clinica", instructions="Sistema fictício da Clínica Vida Plena: agenda, prontuários e mensagens.")
 
-VERMELHO, AZUL, FIM = "\033[41;97m", "\033[44;97m", "\033[0m"
+VERMELHO, AZUL, AMARELO, FIM = "\033[41;97m", "\033[44;97m", "\033[43;30m", "\033[0m"
 
 
 def _aviso(texto, estilo):
@@ -98,6 +100,13 @@ def enviar_mensagem(destinatario: str, texto: str) -> str:
     if estilo == VERMELHO:
         for linha in texto.strip().splitlines()[:25]:
             _aviso("   " + linha, "\033[91m")
+    resultado, info = email_real.enviar(para, texto)   # só faz algo com config_email.env preenchido
+    if resultado == "real":
+        _aviso(f"[SERVIDOR] E-MAIL ENVIADO DE VERDADE PARA {info}", VERMELHO)
+    elif resultado == "falhou":
+        _aviso(f"[SERVIDOR] AVISO: o envio real falhou ({info}); ficou só no simulado.", AMARELO)
+    elif info != "modo real desligado":
+        _aviso(f"[SERVIDOR] E-MAIL REAL NÃO ENVIADO ({info}); ficou só no simulado.", AMARELO)
     return f"Mensagem enviada para {para}."
 
 

@@ -8,6 +8,8 @@ from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 
 RAIZ = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(RAIZ))
+import email_real   # só para mostrar na tela se o e-mail está simulado ou real
 ESTATICO = Path(__file__).resolve().parent / "static"
 JURIDICO = RAIZ / "cenario_juridico"
 MEDICO = RAIZ / "cenario_medico"
@@ -140,6 +142,8 @@ class Tratador(BaseHTTPRequestHandler):
                 if nome not in PETICOES:
                     return self.responder(404, {"erro": "petição desconhecida"})
                 return self.responder(200, peticao_em_json(nome))
+            if rota == "/api/email":
+                return self.responder(200, email_real.estado())
             if rota == "/api/gravados":
                 return self.responder(200, gravados())
             if rota == "/api/status":

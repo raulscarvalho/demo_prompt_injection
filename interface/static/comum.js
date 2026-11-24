@@ -114,74 +114,80 @@ function criarCronometro(faixa) {
       const passo = () => { const s = Math.floor((Date.now() - inicio) / 1000); relogio.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
       passo(); id = setInterval(passo, 250);
     },
+    etapa(texto) { rotulo.textContent = texto; },
     parar() { clearInterval(id); faixa.classList.remove("ativo"); return Math.round((Date.now() - inicio) / 1000); },
   };
 }
 
-// ---------------------------------------------------------------- painel "Bastidores da IA"
+// ---------------------------------------------------------------- painel "Bastidores da IA" (compacto: uma linha por passo, clique abre o detalhe)
 const ICONES = {
   consultar_agenda: "📅", ler_prontuario: "📂", enviar_mensagem: "✉️",
   ler_peticao: "📄", consultar_processo: "🔎", salvar_minuta: "💾", inspecionar_formatacao: "🔬",
 };
 function resumoArgs(f) {
   const a = f.args || {};
-  const partes = Object.entries(a).map(([k, v]) => {
-    let s = String(v).replace(/\s+/g, " ");
-    if (s.length > 140) s = s.slice(0, 140) + "…";
-    return `${k}: ${s}`;
-  });
-  return partes.join("  ·  ") || f.argsTexto;
+  return Object.values(a).map((v) => String(v).replace(/\s+/g, " ")).join(" · ") || f.argsTexto;
 }
 function criarBastidores(raiz) {
-  const cartoes = new Map();
-  const vazio = () => { raiz.innerHTML = ""; raiz.append(el("div", "vazio", "Aqui aparece, em tempo real, cada ferramenta que a IA chamar e o que o servidor responder.")); };
+  const passos = new Map();
+  const vazio = () => { raiz.innerHTML = ""; raiz.append(el("div", "vazio", "Cada ferramenta que a IA chamar aparece aqui.")); };
   vazio();
   const rolar = () => { raiz.scrollTop = raiz.scrollHeight; };
-  const tirarVazio = () => { const v = $(".vazio", raiz); if (v) v.remove(); };
+  function linha(icone, principal, secundario, selo, classe) {
+    const v = $(".vazio", raiz); if (v) v.remove();
+    const d = el("details", "passo " + (classe || ""));
+    const s = el("summary");
+    const l1 = el("span", "linha1");
+    if (principal) l1.append(principal);
+    if (secundario) l1.append(el("span", "args", " " + secundario));
+    s.append(el("span", "icone", icone), l1, el("span", "selo", selo || ""));
+    d.append(s, el("div", "detalhe"));
+    raiz.append(d); rolar();
+    return d;
+  }
+  const definir = (d, classe, selo) => { d.className = "passo " + classe; $(".selo", d).textContent = selo; };
   return {
-    limpar() { cartoes.clear(); vazio(); },
+    limpar() { passos.clear(); vazio(); },
     ferramenta(f) {
-      tirarVazio();
-      const c = el("div", "passo");
-      const cab = el("div", "cab");
-      cab.append(el("span", "icone", ICONES[f.nome] || "🛠️"), el("span", "", "IA chamou"), el("span", "nome", f.nome));
-      c.append(cab, el("div", "args", resumoArgs(f)));
-      raiz.append(c); cartoes.set(f, c); rolar();
+      const d = linha(ICONES[f.nome] || "🛠️", el("span", "nome", f.nome), resumoArgs(f), "");
+      $(".detalhe", d).textContent = JSON.stringify(f.args, null, 1);
+      passos.set(f, d);
     },
     retorno(f) {
-      const c = cartoes.get(f); if (!c) return;
-      let r = $(".retorno", c);
-      if (!r) { r = el("div", "retorno"); c.append(r); }
-      r.textContent = "↳ " + f.retorno;
-      if (/^(ACESSO NEGADO|BLOQUEADO)/.test(f.retorno) && !$(".selo-barrado", c)) { c.classList.add("bom"); $(".cab", c).append(el("span", "selo-barrado", "🛡️ barrado pelo servidor")); }
-      if (/já chamou esta ferramenta/.test(f.retorno)) c.classList.add("aviso");
-      rolar();
+      const d = passos.get(f); if (!d) return;
+      $(".detalhe", d).textContent = JSON.stringify(f.args, null, 1) + "\n\n↳ " + f.retorno;
+      if (/^(ACESSO NEGADO|BLOQUEADO)/.test(f.retorno)) definir(d, "bom", "barrado");
+      else if (/já chamou esta ferramenta/.test(f.retorno)) definir(d, "aviso", "repetida");
     },
-    servidor(b, classe, icone, titulo) {
-      tirarVazio();
-      const c = el("div", "passo servidor " + (classe || ""));
-      const cab = el("div", "cab");
-      cab.append(el("span", "icone", icone || "🖥️"), el("span", "", titulo || "Servidor MCP"));
-      c.append(cab, el("div", "texto", b.texto));
-      const corpo = el("div", "corpo"); c.append(corpo);
-      raiz.append(c); cartoes.set(b, c); rolar();
+    servidor(b, classe, icone, titulo, selo) {
+      const d = linha(icone || "🖥️", el("b", "", titulo || "Servidor"), "", selo || "servidor", classe);
+      $(".detalhe", d).textContent = b.texto;
+      passos.set(b, d);
     },
-    corpo(b) { const c = cartoes.get(b); if (c) { $(".corpo", c).textContent = b.corpo.join("\n"); rolar(); } },
-    nota(texto, classe, icone) {
-      tirarVazio();
-      const c = el("div", "passo " + (classe || ""));
-      const cab = el("div", "cab"); cab.append(el("span", "icone", icone || "ℹ️"), el("span", "texto", texto));
-      c.append(cab); raiz.append(c); rolar();
+    marcar(f, classe, selo, extra) {   // a resposta do servidor marca a própria linha da ferramenta
+      const d = passos.get(f); if (!d) return false;
+      definir(d, classe, selo);
+      if (extra) $(".detalhe", d).textContent += "\n\n[servidor] " + extra;
+      return true;
     },
+    corpo(b) { const d = passos.get(b); if (d) $(".detalhe", d).textContent = b.texto + "\n\n" + b.corpo.join("\n"); },
+    nota(texto, classe, icone, selo) { const d = linha(icone || "·", texto, "", selo || "", classe); $(".detalhe", d).remove(); },
   };
+}
+function ligarRecolher(botao, cartao, grade) {
+  botao.addEventListener("click", () => {
+    const fechado = cartao.classList.toggle("recolhido");
+    grade.classList.toggle("sem-bastidores", fechado);
+    botao.textContent = fechado ? "‹" : "›";
+    botao.title = fechado ? "Mostrar os bastidores da IA" : "Recolher os bastidores da IA";
+  });
 }
 
 // ---------------------------------------------------------------- controles comuns
 function ligarProtecao(botao, aoMudar) {
   const pintar = () => {
     const on = botao.classList.contains("ligada");
-    $(".rot", botao).textContent = on ? "PROTEÇÃO: LIGADA" : "PROTEÇÃO: DESLIGADA";
-    $(".bolinha", botao).textContent = on ? "🛡️" : "⚠️";
+    $(".rot", botao).textContent = on ? "Proteção ligada" : "Proteção desligada";
     botao.setAttribute("aria-pressed", on);
   };
   botao.addEventListener("click", () => { botao.classList.toggle("ligada"); pintar(); aoMudar && aoMudar(botao.classList.contains("ligada")); });
@@ -195,10 +201,22 @@ function ligarProtecao(botao, aoMudar) {
 async function mostrarStatus(alvo, seletorModelo) {
   try {
     const s = await (await fetch("/api/status")).json();
-    if (!s.ollama) { alvo.textContent = "⚠ Ollama não respondeu. Abra o Ollama antes da demo."; return; }
+    if (!s.ollama) { alvo.textContent = "Ollama fechado: abra o Ollama pelo menu Iniciar"; return; }
     const m = seletorModelo.value;
-    alvo.textContent = s.carregados.includes(m) ? `● ${m} carregado na memória` : `○ ${m} ainda não carregado (a 1ª resposta demora mais)`;
-  } catch (e) { alvo.textContent = "⚠ servidor da interface fora do ar"; }
+    alvo.textContent = s.carregados.includes(m) ? `● ${m} pronto` : `○ ${m} não carregado`;
+  } catch (e) { alvo.textContent = "Interface fora do ar: suba a interface de novo"; }
+}
+
+async function mostrarEmail(alvo) {
+  try {
+    const e = await (await fetch("/api/email")).json();
+    if (e.modo === "real") {
+      alvo.textContent = "E-mail: REAL";
+      alvo.title = "config_email.env preenchido: endereços reais recebem de verdade (fictícios continuam simulados). Permitidos: "
+        + (Array.isArray(e.permitidos) ? e.permitidos.join(", ") : e.permitidos);
+      alvo.classList.add("real");
+    } else { alvo.textContent = "E-mail: simulado"; alvo.title = "Nada é enviado de verdade."; }
+  } catch (err) { alvo.textContent = ""; }
 }
 
 async function preencherGravados(select, prefixos) {

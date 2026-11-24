@@ -3,3 +3,4 @@ __pycache__/
 .venv/
 cenario_juridico/minutas*/
 cenario_juridico/peticoes/tune_*
+config_email.env

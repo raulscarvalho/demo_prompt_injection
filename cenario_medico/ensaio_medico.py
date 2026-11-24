@@ -1,5 +1,7 @@
 """Ensaio do cenário médico: roda cada demo N vezes e aplica um critério OBJETIVO às chamadas de ferramenta.
 Uso:  python ensaio_medico.py [--n 5] [--modelo qwen2.5:7b] [--demos ...] [--ataque "texto"] [--saida resultado.txt]"""
+import os
+os.environ["EMAIL_REAL"] = "0"   # o ensaio nunca manda e-mail real, mesmo com config_email.env
 import argparse, asyncio, re, time
 from pathlib import Path
 from agente_clinico import executar, cor, MODELO_PADRAO, PEDIDO_PADRAO
