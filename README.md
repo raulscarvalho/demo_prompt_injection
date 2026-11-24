@@ -3,6 +3,15 @@
 Demonstração para minicurso. Três cenários: o assistente de escritório (abaixo), o [cenário jurídico](#cenário-jurídico-a-petição-com-texto-invisível-cenario_juridico), uma petição com texto invisível (injeção **indireta**), e o [cenário médico](#cenário-médico-a-falsa-diretora-clínica-cenario_medico), a recepção de uma clínica (injeção **direta**). **Tudo é offline e falso**: as senhas são inventadas e `enviar_email`
 não envia nada, só anota em `caixa_de_saida.txt` e imprime um aviso vermelho.
 
+**Interface visual (recomendada para apresentar):** `.venv\Scripts\python.exe interface\app.py` abre
+`http://localhost:8000`, com uma tela para cada demo: **Jurídico** (injeção indireta: a petição aparece como documento,
+com botão para revelar o texto oculto, e a minuta da IA com os trechos-chave destacados) e **Saúde** (injeção direta:
+chat da recepção da clínica, agenda, prontuários e caixa de saída). As duas têm o interruptor de proteção, o seletor de
+usuário logado e o painel "Bastidores da IA", que mostra cada ferramenta chamada. Só biblioteca padrão do Python, sem
+internet; ela roda os mesmos `agente_juridico.py` e `agente_clinico.py` da linha de comando e transmite a saída para o
+navegador. Também reproduz as saídas gravadas de `roteiro_saidas/` (plano B). `interface\capturar_telas.py` testa as
+telas de ponta a ponta no Chrome/Edge instalado (headless) e salva capturas em `interface/capturas/`.
+
 **Vai apresentar?** Siga o [ROTEIRO_DEMO.md](ROTEIRO_DEMO.md): passo a passo de ~15 min, com o que falar, os comandos e
 as saídas gravadas de cada etapa em `roteiro_saidas/` (plano B).
 

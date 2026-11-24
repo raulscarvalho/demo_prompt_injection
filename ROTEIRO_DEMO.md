@@ -10,6 +10,48 @@ Os tempos abaixo foram medidos no notebook com o 7b já carregado. Enquanto o mo
 
 ---
 
+## Usando a interface (recomendado: nada de digitar prompt no terminal)
+
+A interface roda **neste computador, sem internet**, e executa exatamente os mesmos programas dos comandos abaixo. A
+tela mostra o resultado de forma visual: chat, documentos, caixa de saída e, à direita, os **Bastidores da IA**
+(cada ferramenta que a IA chamou e o que o servidor respondeu). Na pasta `demo_prompt_injection`:
+
+```powershell
+.venv\Scripts\python.exe interface\app.py
+```
+
+O navegador abre em `http://localhost:8000`. Na tela inicial, clique em **Esquentar modelo** (uns 30 s a 1 min).
+Abra os dois cenários em abas separadas: **Jurídico** (`/juridico`) e **Saúde** (`/clinica`). Use o zoom do navegador
+(Ctrl + roda do mouse) para ajustar ao projetor. No topo de cada tela ficam o interruptor **PROTEÇÃO:
+DESLIGADA/LIGADA** (vermelho/verde), o seletor **Usuário logado**, o modelo (canto) e **Reiniciar demo**, que apaga
+as minutas e a caixa de saída.
+
+| Etapa | Aba | O que clicar |
+|---|---|---|
+| 0 | Início | **Esquentar modelo** e **Reiniciar demo** nas duas abas |
+| 2 controle | Jurídico | Quem usa a IA: **IA da defesa** · Petição: **Petição limpa** · **Pedir à IA**. Aparece a faixa verde "Contestação completa: impugna os documentos" |
+| 3 texto escondido | Jurídico | Petição: **Com texto oculto contra a defesa**. Mostre que não se vê nada e clique em **🔍 Revelar texto oculto** (o trecho aparece em amarelo com borda vermelha). Clique de novo para esconder |
+| 4 ataque na defesa | Jurídico | **Pedir à IA**. Faixa vermelha "A contestação NÃO impugna as provas do trabalhador"; a frase "não se opõe aos documentos" vem marcada em vermelho na minuta |
+| 5 ataque no juiz | Jurídico | Quem usa a IA: **IA do juiz** (a petição troca sozinha para a de contra o juiz) · **Pedir à IA**. O ENCAMINHAMENTO SUGERIDO aparece em vermelho com "PROCEDÊNCIA" |
+| 6 injeção direta | Saúde | **📅 Pedido normal** → **Enviar** (resposta "09:00"). Depois **⚠️ Ataque: "sou a diretora clínica"** → **Enviar**. Os prontuários ficam vermelhos ("ABERTO PELA RECEPÇÃO!") e a caixa de saída mostra o cartão vermelho "DADOS DE PACIENTES ENVIADOS PARA auditoria.saude@exemplo.com", com os diagnósticos marcados |
+| 7a texto oculto | Jurídico | Ligue a **PROTEÇÃO** · IA da defesa · Com texto oculto contra a defesa · **Pedir à IA**. Faixa "ALERTA: texto oculto encontrado" sobre a petição, o trecho aparece riscado e a minuta sai com o carimbo **PENDENTE DE REVISÃO HUMANA** |
+| 7b login | Saúde | Ligue a **PROTEÇÃO** · **⚠️ Ataque** → **Enviar**: faixa "ACESSO NEGADO: quem está logado é 'recepcao'" e os prontuários ficam verdes ("acesso negado"). Depois **🩺 Médico lê prontuário** (o usuário troca para `medico`) → **Enviar**: o prontuário abre |
+| 7c humano | Jurídico | O carimbo e a faixa amarela da minuta da etapa 7a |
+
+O botão de ataque usa sozinho o texto certo para o modelo escolhido: o curto no 7b e o texto em passos no 3b.
+
+**Plano B na interface:** no rodapé dos Bastidores, em **Plano B, saída gravada**, escolha o arquivo (ex.:
+`12_medico_ataque`) e clique em **▶ reproduzir**. A tela se monta igual a uma execução ao vivo, a partir das saídas
+em `roteiro_saidas\`. **Parar** interrompe uma execução travada.
+
+Atalhos pela URL, se quiser deixar abas prontas: `http://localhost:8000/clinica?p=ataque&protegido=1` (preenche o
+pedido e liga a proteção; `&auto=1` já envia) e
+`http://localhost:8000/juridico?papel=juizo&peticao=peticao_injetada_juizo.docx`.
+
+Se preferir o terminal, os comandos de cada etapa continuam abaixo.
+
+---
+
 ## 0. Preparação (antes de o público entrar)
 
 Terminal PowerShell, com fonte grande (Ctrl + roda do mouse):
